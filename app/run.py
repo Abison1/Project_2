@@ -5,9 +5,9 @@ import pandas as pd
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
-from flask import Flask
-from flask import render_template, request, jsonify
-from plotly.graph_objs import Bar
+from flask import Flask, render_template, request
+#from flask import render_template, request #jsonify
+from plotly.graph_objs import Bar, Histogram
 import joblib
 from sqlalchemy import create_engine
 
@@ -26,46 +26,81 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-engine = create_engine('sqlite:///../data/DisasterResponse.db')
+engine = create_engine('sqlite:///data/DisasterResponse.db')
+#conn = engine.connect()
 df = pd.read_sql_table('Messages', engine)
 
 # load model
-model = joblib.load("../models/model.pkl")
+model = joblib.load("models/model.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
 @app.route('/')
 @app.route('/index')
 def index():
-    
-    # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
+     
+    # create visuals
+    # Visual 1: Distribution of messages genres
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
-    
-    # create visuals
-    # TODO: Below is an example - modify to create your own visuals
-    graphs = [
-        {
-            'data': [
+
+    #Visual 2:Top ten type message
+    top_10message = df[df.columns[3:]].sum().sort_values(ascending=False)[:10]
+    #Visual 2:Bottom 10 type message
+    bottom_10message = df[df.columns[3:]].sum().sort_values()[:10]
+
+    graphs=[ {
+         'data': [
                 Bar(
                     x=genre_names,
                     y=genre_counts
                 )
-            ],
+                 ],
 
             'layout': {
                 'title': 'Distribution of Message Genres',
-                'yaxis': {
-                    'title': "Count"
-                },
-                'xaxis': {
-                    'title': "Genre"
-                }
-            }
-        }
-    ]
+                'yaxis': { 'title': "Count"},
+                'xaxis': {'title': "Genre"}
+                     }
+            },
+        
+    #Visual 2: Top 10
+        {
+         'data': [
+            Bar(
+                x=top_10message.index,
+                y = top_10message
+               )
+                ],
+
+            'layout': {
+                'title': 'Top ten type messages',
+                'yaxis': { 'title': "count"},
+                'xaxis': {'title': "Message type"}
+                     } 
+            
+            },
     
+    #Visual 3: Bottom 10
+        {
+         'data': [
+            Bar(
+                x=bottom_10message.index,
+                y = bottom_10message
+               )
+                ],
+
+            'layout': {
+                'title': 'Bottom ten type messages',
+                'yaxis': { 'title': "count"},
+                'xaxis': {'title': "Message type"}
+                     } 
+         
+            }
+    ]   
+    
+    # Add both visuals to the 'graphs' list
+    #graphs = [graph1, graph2]
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
