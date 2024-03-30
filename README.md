@@ -57,6 +57,6 @@ README.md
     To get the app working, you need to run run.py file.
     Below graph shows default page.
     Subsequent graphs shows the top ten and botton message type.
-
-![alt text](image-1.png)
-![alt text](image-2.png)
+https://github.com/Abison1/Project_2/blob/main/images/image-1.png?raw=true
+![Immage 1](https://github.com/Abison1/Project_2/blob/main/images/image-1.png?raw=true))
+![alt text]
