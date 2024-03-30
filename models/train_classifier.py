@@ -72,9 +72,9 @@ def tokenize(text):
 
 def build_model():
     '''
-    This function 
+    This function build a pipeline and return a Gridsearch output
     '''
-    pass
+    
     # create an ML pipeline
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
@@ -90,6 +90,17 @@ def build_model():
     
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    '''
+    This function evaluate the model created.
+    
+    :param model: text to be tokenized
+    :param X_test: independant test values taken from tarin_test split
+    :param Y_test: dependant test values taken from train_test split
+    :param category_names: category names
+    
+    :return :model accuracy score
+    '''
+    
     y_pred = model.predict(X_test)
     
     i = 0
@@ -103,6 +114,14 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+        '''
+    This function save the model created to given filepath name
+    
+    :param model: model
+    :param model_filepath: name of model
+    
+    :return :pickle file
+    '''
     pickle_file_path = "model.pkl"
     with open(pickle_file_path, "wb") as pickle_file:
         pickle.dump(model, pickle_file)
